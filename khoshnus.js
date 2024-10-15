@@ -27,24 +27,24 @@ const FONT_MATRIX = {
     },
     "Parisienne": {
         name: "Parisienne",
-        strokeDashoffset: 50
+        strokeDashoffset: 80
     },
     "Sevillana": {
         name: "Sevillana",
-        strokeDashoffset: 50
+        strokeDashoffset: 120
     },
     "Pinyon Script": {
         name: "Pinyon Script",
-        strokeDashoffset: 60
+        strokeDashoffset: 100
     },
 }
 
-const initSvgStyle = ({ font, fontSize }) => {
+const initSvgStyle = ({ font, fontSize, strokeDashoffset }) => {
     if (!FONT_MATRIX[font]) throw new Error("Font is not supported.")
     const fontStyle = `
-    #${KHOSHNUS_SVG_ID} * {
-        stroke-dasharray: ${FONT_MATRIX[font].strokeDashoffset};
-        stroke-dashoffset: ${FONT_MATRIX[font].strokeDashoffset};
+    #${KHOSHNUS_SVG_ID} text tspan {
+        stroke-dasharray: ${strokeDashoffset || FONT_MATRIX[font].strokeDashoffset};
+        stroke-dashoffset: ${strokeDashoffset || FONT_MATRIX[font].strokeDashoffset};
         animation: draw-stroke 2.75s cubic-bezier(0.215, 0.610, 0.355, 1) forwards, draw-fill 3s cubic-bezier(0.5, 0.135, 0.15, 0.56) forwards;
         stroke: black;
         stroke-width: 0.01;
@@ -79,8 +79,8 @@ const initKeyframes = () => {
     style.innerHTML = style.innerHTML.concat(keyframes);
 }
 
-const bnasena = ({ font = FONT_MATRIX["Pinyon Script"].name, fontSize = "12px" }) => {
-    initSvgStyle({ font, fontSize });
+const bnasena = ({ font = FONT_MATRIX["Pinyon Script"].name, fontSize = "12px", strokeDashoffset }) => {
+    initSvgStyle({ font, fontSize, strokeDashoffset });
     initKeyframes();
 }
 
@@ -89,9 +89,23 @@ const checkDeclaration = () => {
     if (!svg) throw new Error("Khosnus SVG not initiated.")
 }
 
+
+const defaultLetterProperties = {
+    delay: 0.25
+}
+
+const writeLetters = (textElement, letters, letterProperties) => {
+    [...letters].forEach((letter, index) => {
+        const tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan")
+        tspan.textContent = letter;
+        tspan.style.animationDelay = `${(index + 1) * letterProperties.delay}s`;
+        textElement.appendChild(tspan);
+    });
+}
+
 const defaultTextProperties = { x: "50%", y: "50%", textAnchor: "middle", dominantBaseline: "middle", fontSize: "12px" }
 
-const bnus = (nusraw, textProperties = defaultTextProperties) => {
+const bnus = (nusraw, textProperties = defaultTextProperties, letterProperties = defaultLetterProperties) => {
     checkDeclaration();
     const svg = document.getElementById(KHOSHNUS_SVG_ID);
 
@@ -103,7 +117,7 @@ const bnus = (nusraw, textProperties = defaultTextProperties) => {
     if (textProperties.fontSize) {
         textElement.setAttribute("font-size", textProperties.fontSize);
     }
-    textElement.textContent = nusraw;
+    writeLetters(textElement, nusraw, letterProperties);
 
     svg.appendChild(textElement);
 }
