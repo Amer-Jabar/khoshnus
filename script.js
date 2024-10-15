@@ -1,4 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-    bnasena(FONT_MATRIX["Pinyon Script"].name);
+    bnasena({ font: FONT_MATRIX["Pinyon Script"].name, fontSize: "10px" });
     bnus("The Name Is Optimus");
 })

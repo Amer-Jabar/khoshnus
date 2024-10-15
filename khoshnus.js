@@ -39,7 +39,7 @@ const FONT_MATRIX = {
     },
 }
 
-const initSvgStyle = (font) => {
+const initSvgStyle = ({ font, fontSize }) => {
     if (!FONT_MATRIX[font]) throw new Error("Font is not supported.")
     const fontStyle = `
     #${KHOSHNUS_SVG_ID} * {
@@ -49,7 +49,8 @@ const initSvgStyle = (font) => {
         stroke: black;
         stroke-width: 0.01;
         fill: transparent;
-        font-family: "${font}";
+        font-size: ${fontSize};
+        font-family: ${font};
     }
     `
 
@@ -78,8 +79,8 @@ const initKeyframes = () => {
     style.innerHTML = style.innerHTML.concat(keyframes);
 }
 
-const bnasena = (font) => {
-    initSvgStyle(font);
+const bnasena = ({ font = FONT_MATRIX["Pinyon Script"].name, fontSize = "12px" }) => {
+    initSvgStyle({ font, fontSize });
     initKeyframes();
 }
 
@@ -88,16 +89,20 @@ const checkDeclaration = () => {
     if (!svg) throw new Error("Khosnus SVG not initiated.")
 }
 
-const bnus = (nusraw) => {
+const defaultTextProperties = { x: "50%", y: "50%", textAnchor: "middle", dominantBaseline: "middle", fontSize: "12px" }
+
+const bnus = (nusraw, textProperties = defaultTextProperties) => {
     checkDeclaration();
     const svg = document.getElementById(KHOSHNUS_SVG_ID);
 
     const textElement = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    textElement.setAttribute("x", "50%");
-    textElement.setAttribute("y", "50%");
-    textElement.setAttribute("text-anchor", "middle");
-    textElement.setAttribute("dominant-baseline", "middle");
-    textElement.setAttribute("font-size", "10px");
+    textElement.setAttribute("x", textProperties.x);
+    textElement.setAttribute("y", textProperties.y);
+    textElement.setAttribute("text-anchor", textProperties.textAnchor);
+    textElement.setAttribute("dominant-baseline", textProperties.dominantBaseline);
+    if (textProperties.fontSize) {
+        textElement.setAttribute("font-size", textProperties.fontSize);
+    }
     textElement.textContent = nusraw;
 
     svg.appendChild(textElement);
