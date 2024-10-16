@@ -1,0 +1,30 @@
+{
+  "name": "khoshnus",
+  "version": "1.0.0",
+  "description": "A library to write text in a nice (calligraphy) animated fashion",
+  "main": "khoshnus.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Amer-Jabar/khosnus.git"
+  },
+  "keywords": [
+    "js",
+    "javascript",
+    "react.js",
+    "next.js",
+    "calligraphy",
+    "writing",
+    "handwriting",
+    "text",
+    "animation"
+  ],
+  "author": "Amer-Jabar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Amer-Jabar/khosnus/issues"
+  },
+  "homepage": "https://github.com/Amer-Jabar/khosnus#readme"
+}
