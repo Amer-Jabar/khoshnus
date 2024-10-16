@@ -90,14 +90,14 @@ const initializeKeyframes = (initializationConfiguration) => {
  */
 const defaultInitializationConfiguration = {
     font: FONT_MATRIX["Pinyon Script"].name,
-    fontSize: "12px",
+    fontSize: "16px",
     startStrokeDashoffset: FONT_MATRIX["Pinyon Script"].strokeDashoffset,
-    startStrokeWidth: 0.01,
+    startStrokeWidth: 0.001,
     startFill: "transparent",
     endFill: "black",
     startStroke: "black",
     endStrokeDashoffset: 0,
-    endStrokeWidth: 0.1,
+    endStrokeWidth: 0.3,
     endStroke: "transparent",
     baseAnimationDelay: 2.5,
     textFillExtraAnimationDelay: 3,
@@ -160,4 +160,4 @@ const write = (text, writingConfiguration = defaultWritingConfiguration) => {
     svg.appendChild(textElement);
 }
 
-module.exports = { initialize, write }
+module.exports = { initialize, write, FONT_MATRIX, defaultInitializationConfiguration, defaultWritingConfiguration }

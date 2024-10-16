@@ -31,10 +31,3 @@
     font-family: "VTKS";
     src: url("./public/fonts/Vtks\ Beautiful\ Dreams.ttf");
 }
-
-body {
-    margin: 0px;
-    position: absolute;
-    width: 100%;
-    height: 100%;
-}
