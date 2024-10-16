@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Amer-Jabar/khosnus.git"
+    "url": "git+https://github.com/Amer-Jabar/khoshnus.git"
   },
   "keywords": [
     "js",
@@ -24,7 +24,7 @@
   "author": "Amer-Jabar",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Amer-Jabar/khosnus/issues"
+    "url": "https://github.com/Amer-Jabar/khoshnus/issues"
   },
-  "homepage": "https://github.com/Amer-Jabar/khosnus#readme"
+  "homepage": "https://github.com/Amer-Jabar/khoshnus#readme"
 }
