@@ -111,7 +111,7 @@ const initialize = (initializationConfiguration = defaultInitializationConfigura
 
 const checkDeclaration = () => {
     const svg = document.getElementById(KHOSHNUS_SVG_ID);
-    if (!svg) throw new Error("Khosnus SVG not initiated.")
+    if (!svg) throw new Error("Khoshnus SVG not initiated.")
 }
 
 const writeLetters = (textElement, letters, letterConfiguration) => {
