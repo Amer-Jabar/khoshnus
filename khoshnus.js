@@ -1,4 +1,8 @@
 const KHOSHNUS_SVG_ID = "khoshnus";
+const INCORRECT_CONFIGURATION_PROVIDED_ERROR_MESSAGE = "Provided configuration must be of type object!"
+const checkConfigurationValidity = (predicate, configuration) => {
+    if (!predicate(configuration)) throw new Error(INCORRECT_CONFIGURATION_PROVIDED_ERROR_MESSAGE);
+}
 
 const FONT_MATRIX = {
     "BlackCherry": {
@@ -27,7 +31,7 @@ const FONT_MATRIX = {
     },
     "Parisienne": {
         name: "Parisienne",
-        strokeDashoffset: 80
+        strokeDashoffset: 100
     },
     "Sevillana": {
         name: "Sevillana",
@@ -39,16 +43,16 @@ const FONT_MATRIX = {
     },
 }
 
-const initSvgStyle = ({ font, fontSize, strokeDashoffset }) => {
+const initSvgStyle = ({ font, fontSize, startStrokeDashoffset, startStrokeWidth, startFill, startStroke, baseAnimationDelay, textFillExtraAnimationDelay }) => {
     if (!FONT_MATRIX[font]) throw new Error("Font is not supported.")
     const fontStyle = `
     #${KHOSHNUS_SVG_ID} text tspan {
-        stroke-dasharray: ${strokeDashoffset || FONT_MATRIX[font].strokeDashoffset};
-        stroke-dashoffset: ${strokeDashoffset || FONT_MATRIX[font].strokeDashoffset};
-        animation: draw-stroke 2.75s cubic-bezier(0.215, 0.610, 0.355, 1) forwards, draw-fill 3s cubic-bezier(0.5, 0.135, 0.15, 0.56) forwards;
-        stroke: black;
-        stroke-width: 0.01;
-        fill: transparent;
+        stroke-dasharray: ${startStrokeDashoffset || FONT_MATRIX[font].startStrokeDashoffset};
+        stroke-dashoffset: ${startStrokeDashoffset || FONT_MATRIX[font].startStrokeDashoffset};
+        animation: draw-stroke ${baseAnimationDelay}s cubic-bezier(0.215, 0.610, 0.355, 1) forwards, draw-fill ${textFillExtraAnimationDelay}s cubic-bezier(0.5, 0.135, 0.15, 0.56) forwards;
+        stroke: ${startStroke};
+        stroke-width: ${startStrokeWidth};
+        fill: ${startFill};
         font-size: ${fontSize};
         font-family: ${font};
     }
@@ -59,29 +63,50 @@ const initSvgStyle = ({ font, fontSize, strokeDashoffset }) => {
     document.getElementsByTagName('head')[0].appendChild(style);
 }
 
-const keyframes = `
+const initializeKeyframesCss = ({ endStrokeDashoffset, endStrokeWidth, endFill, endStroke }) => `
 @keyframes draw-stroke {
     to {
-        stroke-dashoffset: 0;
-        stroke-width: 0.1;
+        stroke-dashoffset: ${endStrokeDashoffset};
+        stroke-width: ${endStrokeWidth};
+        stroke: ${endStroke};
     }
 }
 
 @keyframes draw-fill {
     to {
-        fill: black;
+        fill: ${endFill};
     }
 }
 `
 
-const initKeyframes = () => {
+const initializeKeyframes = (initializationConfiguration) => {
     var style = document.querySelector("style");
-    style.innerHTML = style.innerHTML.concat(keyframes);
+    style.innerHTML = style.innerHTML.concat(initializeKeyframesCss(initializationConfiguration));
 }
 
-const bnasena = ({ font = FONT_MATRIX["Pinyon Script"].name, fontSize = "12px", strokeDashoffset }) => {
-    initSvgStyle({ font, fontSize, strokeDashoffset });
-    initKeyframes();
+/**
+ * baseAnimationDelay - the delay of the strokes animation.
+ * textFillExtraAnimationDelay - the delay of the text fillings animation. It is adviced to have this equal to or more than baseAnimationDelay.
+ */
+const defaultInitializationConfiguration = {
+    font: FONT_MATRIX["Pinyon Script"].name,
+    fontSize: "12px",
+    startStrokeDashoffset: FONT_MATRIX["Pinyon Script"].strokeDashoffset,
+    startStrokeWidth: 0.01,
+    startFill: "transparent",
+    endFill: "black",
+    startStroke: "black",
+    endStrokeDashoffset: 0,
+    endStrokeWidth: 0.1,
+    endStroke: "transparent",
+    baseAnimationDelay: 2.5,
+    textFillExtraAnimationDelay: 3,
+}
+
+const initialize = (initializationConfiguration = defaultInitializationConfiguration) => {
+    checkConfigurationValidity(() => typeof initializationConfiguration === "object", initializationConfiguration);
+    initSvgStyle(initializationConfiguration ? { ...defaultInitializationConfiguration, ...initializationConfiguration } : defaultInitializationConfiguration);
+    initializeKeyframes(initializationConfiguration ? { ...defaultInitializationConfiguration, ...initializationConfiguration } : defaultInitializationConfiguration);
 }
 
 const checkDeclaration = () => {
@@ -89,35 +114,50 @@ const checkDeclaration = () => {
     if (!svg) throw new Error("Khosnus SVG not initiated.")
 }
 
-
-const defaultLetterProperties = {
-    delay: 0.25
-}
-
-const writeLetters = (textElement, letters, letterProperties) => {
+const writeLetters = (textElement, letters, letterConfiguration) => {
     [...letters].forEach((letter, index) => {
         const tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan")
         tspan.textContent = letter;
-        tspan.style.animationDelay = `${(index + 1) * letterProperties.delay}s`;
+        tspan.style.animationDelay = `${(index + 1) * letterConfiguration.delay}s`;
         textElement.appendChild(tspan);
     });
 }
 
-const defaultTextProperties = { x: "50%", y: "50%", textAnchor: "middle", dominantBaseline: "middle", fontSize: "12px" }
+const defaultTextConfiguration = { x: "50%", y: "50%", textAnchor: "middle", dominantBaseline: "middle", fontSize: "12px" }
 
-const bnus = (nusraw, textProperties = defaultTextProperties, letterProperties = defaultLetterProperties) => {
+const defaultLetterConfiguration = {
+    delay: 0.25
+}
+
+const defaultWritingConfiguration = {
+    textConfiguration: defaultTextConfiguration,
+    letterConfiguration: defaultLetterConfiguration,
+}
+
+const write = (text, writingConfiguration = defaultWritingConfiguration) => {
     checkDeclaration();
     const svg = document.getElementById(KHOSHNUS_SVG_ID);
 
+    checkConfigurationValidity(() => {
+        const { textConfiguration, letterConfiguration } = writingConfiguration;
+        return [textConfiguration, letterConfiguration].find(config => typeof config === "object")
+    }, writingConfiguration);
+    const { textConfiguration, letterConfiguration } = {
+        textConfiguration: { ...defaultTextConfiguration, ...writingConfiguration.textConfiguration },
+        letterConfiguration: { ...defaultLetterConfiguration, ...writingConfiguration.letterConfiguration }
+    };
+
     const textElement = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    textElement.setAttribute("x", textProperties.x);
-    textElement.setAttribute("y", textProperties.y);
-    textElement.setAttribute("text-anchor", textProperties.textAnchor);
-    textElement.setAttribute("dominant-baseline", textProperties.dominantBaseline);
-    if (textProperties.fontSize) {
-        textElement.setAttribute("font-size", textProperties.fontSize);
+    textElement.setAttribute("x", textConfiguration.x);
+    textElement.setAttribute("y", textConfiguration.y);
+    textElement.setAttribute("text-anchor", textConfiguration.textAnchor);
+    textElement.setAttribute("dominant-baseline", textConfiguration.dominantBaseline);
+    if (textConfiguration.fontSize) {
+        textElement.setAttribute("font-size", textConfiguration.fontSize);
     }
-    writeLetters(textElement, nusraw, letterProperties);
+    writeLetters(textElement, text, letterConfiguration);
 
     svg.appendChild(textElement);
 }
+
+module.exports = { initialize, write }
