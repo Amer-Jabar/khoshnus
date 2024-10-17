@@ -4,7 +4,7 @@ const checkConfigurationValidity = (predicate, configuration) => {
     if (!predicate(configuration)) throw new Error(INCORRECT_CONFIGURATION_PROVIDED_ERROR_MESSAGE);
 }
 
-export const FONT_MATRIX = {
+const FONT_MATRIX = {
     "BlackCherry": {
         name: "BlackCherry",
         strokeDashoffset: 80
