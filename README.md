@@ -1,5 +1,7 @@
 # ✨ Khoshnus - Craft Beautiful Handwritten SVG Text Animations
-Khoshnus is just a library, but it's also your tool for bringing life to static text in an artistic way. With its elegant SVG animations, your text can now be revealed as if written by hand!
+
+Khoshnus is just a library, but it's also your tool for bringing life to static text in an artistic way. With its
+elegant SVG animations, your text can now be revealed as if written by hand!
 
 ## 🖋️ What Does Khoshnus Do?
 
@@ -19,64 +21,120 @@ Khoshnus lets you:
 
 ## 🚀 Quick Start
 
-Here's how you can make your text come alive with Khoshnus:
+
+### 📦 Installation
+
+To get started with Khoshnus, add the npm package to your project by running either of the following commands:
+
+```bash
+npm install khoshnus
+--------------------
+yarn add khoshnus
+```
+
+### TL;DR
+
+Do this if you are using React.
+```javascript
+import { FONT_MATRIX, initialize, write } from "khoshnus"
+import 'khoshnus/style.css'
+
+const App = () => {
+    useEffect(() => {
+        initialize({
+            font: FONT_MATRIX['Pinyon Script'].name,
+            fontSize: "8px",
+        });
+        write("Hello Universe, My Name Is Optimus Prime!");
+    }, []);
+
+    return (
+        <div>
+            <svg id="khoshnus" width="100%" height="500" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+    )
+}
+```
+
+---
+
+---
 
 ### 1. Include the SVG in Your HTML
 
-Add an empty SVG element with an id that Khoshnus will use to animate your text:
+Add an empty SVG element with the id of `khoshnus` that Khoshnus will use to animate your text. Feel free to adjust the size of the SVG
+based on your needs.
 
 ```html
+
 <svg id="khoshnus" width="100%" height="100%" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"></svg>
 ```
 
 ### 2. Initialize and Write Your Text
 
-Once the page is ready, use Khoshnus to initialize the animation and define the text you want to animate:
+Once you have your bare HTML file, import the basic stuff needed from the library:
 
 ```javascript
+import { initialize, write, FONT_MATRIX } from "khoshnus";
+
+import "khoshnus/style.css";
+```
+
+Then start using the library:
+
+```javascript
+// Initialize the global configuration.
 initialize({
-    font: FONT_MATRIX["Parisienne"].name, // Any of the available fonts.
-    fontSize: "10px", // Any font size suitable for your SVG element.
+    font: FONT_MATRIX["Parisienne"].name, // Any of the supported fonts.
+    fontSize: "10px", // Any font size suitable for your SVG element bounds.
 });
+// Write the letters into the SVG element.
 write("Hello Universe, My Name Is Optimus Prime!");
 ```
 
 ### 3. Customize Your Animation
-Khoshnus offers full control over your animation. Want the text to feel like it’s written slowly or quickly? You decide! Here’s a glimpse of how you can tweak it:
+
+Khoshnus offers full control over your animation. Want the text to feel like it’s written slowly or quickly? You decide!
+Here’s a glimpse of how you can tweak it:
 
 ```javascript
 initialize({
-    font: FONT_MATRIX["Pinyon Script"].name,
-    fontSize: "12px",
-    startStrokeDashoffset: 100,
-    startStrokeWidth: 0.01,
+    font: FONT_MATRIX["Pinyon Script"].name, // Only fonts from FONT_MATRIX are available.
+    fontSize: "16px",
+    startStrokeDashoffset: FONT_MATRIX["Pinyon Script"].strokeDashoffset, // Or any strokeDashoffset you want the letters to start with.
+    startStrokeWidth: 0.001,
+    startFill: "transparent",
     endFill: "black",
     startStroke: "black",
     endStrokeDashoffset: 0,
-    endStrokeWidth: 0.1,
+    endStrokeWidth: 0.3,
+    endStroke: "transparent",
     baseAnimationDelay: 2.5,
     textFillExtraAnimationDelay: 3,
 });
 ```
 
-### You can define:
-
-- Font and Size: Choose from several beautiful fonts with distinct styles.
-- Stroke and Fill: Customize how each letter is drawn and filled.
-- Animation Delays: Fine-tune the speed and sequence of how letters appear on the screen.
 ### ✍️ Make Every Letter Special
+
 The magic of Khoshnus lies in its ability to animate text letter-by-letter. Here’s an example:
 
 ```javascript
 write("Your Text Here", {
     letterConfiguration: {
         delay: 0.25, // Delays each letter's animation
+    },
+    textConfiguration: {
+        x: "50%", // X position of the text.
+        y: "50%", // Y position of the text.
+        textAnchor: "middle", // Anchor of the text.
+        dominantBaseline: "middle", // Baseline of the text - where it should align.
+        fontSize: "12px" // Font size - appearance could possibly depend on the parent element.
     }
 });
 ```
-With `letterConfiguration`, you control how fast each letter appears, giving your text an artistic, flowing motion.
 
 ### 🖼️ Font Options
+
 Here are some of the unique fonts you can play with:
 
 - **BlackCherry**: Bold strokes with an offset of 80
@@ -89,23 +147,8 @@ Here are some of the unique fonts you can play with:
 - **Sevillana**: Spanish-inspired curves, with an offset of 120
 - **Pinyon Script**: Formal and sophisticated, offset of 100
 
-## 📦 Installation
-To get started with Khoshnus, simply clone or download the project and link the JavaScript file to your page:
-
-### Add the dependency to your project:
-```bash
-npm install khoshnus
-yarn add khoshnus
-```
-### Import the dependency:
-
-```javascript
-const { initialize, write } = require("khoshnus");
-```
-
-### ✨ Start using it!
-
 ### 🌟 Creative Use Cases
+
 Here are just a few ways you can use Khoshnus:
 
 - Display personalized signature animations for your website.
@@ -114,5 +157,7 @@ Here are just a few ways you can use Khoshnus:
 - Create a storybook-like experience with flowing, hand-drawn text.
 
 ### ⚖️ License
-This project is licensed under the MIT License, meaning you're free to use, modify, and distribute it in both personal and commercial projects.
+
+This project is licensed under the MIT License, meaning you're free to use, modify, and distribute it in both personal
+and commercial projects.
 
