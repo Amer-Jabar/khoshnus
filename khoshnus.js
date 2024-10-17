@@ -4,7 +4,7 @@ const checkConfigurationValidity = (predicate, configuration) => {
     if (!predicate(configuration)) throw new Error(INCORRECT_CONFIGURATION_PROVIDED_ERROR_MESSAGE);
 }
 
-const FONT_MATRIX = {
+export const FONT_MATRIX = {
     "BlackCherry": {
         name: "BlackCherry",
         strokeDashoffset: 80
@@ -43,13 +43,13 @@ const FONT_MATRIX = {
     },
 }
 
-const initSvgStyle = ({ font, fontSize, startStrokeDashoffset, startStrokeWidth, startFill, startStroke, baseAnimationDelay, textFillExtraAnimationDelay }) => {
+const initSvgStyle = ({ font, fontSize, startStrokeDashoffset, startStrokeWidth, startFill, startStroke, baseAnimationDuration, textFillExtraAnimationDuration }) => {
     if (!FONT_MATRIX[font]) throw new Error("Font is not supported.")
     const fontStyle = `
     #${KHOSHNUS_SVG_ID} text tspan {
         stroke-dasharray: ${startStrokeDashoffset || FONT_MATRIX[font].startStrokeDashoffset};
         stroke-dashoffset: ${startStrokeDashoffset || FONT_MATRIX[font].startStrokeDashoffset};
-        animation: draw-stroke ${baseAnimationDelay}s cubic-bezier(0.215, 0.610, 0.355, 1) forwards, draw-fill ${textFillExtraAnimationDelay}s cubic-bezier(0.5, 0.135, 0.15, 0.56) forwards;
+        animation: draw-stroke ${baseAnimationDuration}s cubic-bezier(0.215, 0.610, 0.355, 1) forwards, draw-fill ${textFillExtraAnimationDuration}s cubic-bezier(0.5, 0.135, 0.15, 0.56) forwards;
         stroke: ${startStroke};
         stroke-width: ${startStrokeWidth};
         fill: ${startFill};
@@ -58,7 +58,7 @@ const initSvgStyle = ({ font, fontSize, startStrokeDashoffset, startStrokeWidth,
     }
     `
 
-    var style = document.createElement("style");
+    const style = document.createElement("style");
     style.innerHTML = fontStyle;
     document.getElementsByTagName('head')[0].appendChild(style);
 }
@@ -80,13 +80,13 @@ const initializeKeyframesCss = ({ endStrokeDashoffset, endStrokeWidth, endFill, 
 `
 
 const initializeKeyframes = (initializationConfiguration) => {
-    var style = document.querySelector("style");
+    const style = document.querySelector("style");
     style.innerHTML = style.innerHTML.concat(initializeKeyframesCss(initializationConfiguration));
 }
 
 /**
- * baseAnimationDelay - the delay of the strokes animation.
- * textFillExtraAnimationDelay - the delay of the text fillings animation. It is adviced to have this equal to or more than baseAnimationDelay.
+ * baseAnimationDuration - the duration of strokes animation. This controls how fast does it take for the edges to animate.
+ * textFillExtraAnimationDuration - the duration of the text fillings animation. It is advised to have this equal to or more than baseAnimationDuration.
  */
 const defaultInitializationConfiguration = {
     font: FONT_MATRIX["Pinyon Script"].name,
@@ -99,8 +99,8 @@ const defaultInitializationConfiguration = {
     endStrokeDashoffset: 0,
     endStrokeWidth: 0.3,
     endStroke: "transparent",
-    baseAnimationDelay: 2.5,
-    textFillExtraAnimationDelay: 3,
+    baseAnimationDuration: 2.5,
+    textFillExtraAnimationDuration: 3,
 }
 
 const initialize = (initializationConfiguration = defaultInitializationConfiguration) => {
