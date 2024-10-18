@@ -1,3 +1,5 @@
+![khoshnus-demo-gif](https://imgur.com/0MkNbTJ.gif)
+
 # ✨ Khoshnus - Craft Beautiful Handwritten SVG Text Animations
 
 Khoshnus is just a library, but it's also your tool for bringing life to static text in an artistic way. With its
