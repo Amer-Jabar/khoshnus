@@ -94,15 +94,12 @@ const finalizeEachLetterStyle = (letter, initializationConfiguration) => {
     letter.style.animation = "";
 }
 
-const finalizeLetters = (textElement, letterConfiguration, initializationConfiguration) => {
+const setTotalWaitTimeForFinalization = (textElement, letterConfiguration, initializationConfiguration) => {
     const { eachLetterDelay } = letterConfiguration;
     const { strokeDashoffsetDuration, fillDuration } = initializationConfiguration;
     const scopedDuration = Math.max(strokeDashoffsetDuration, fillDuration)
-    const waitTimeUntilLetterStyleFinalization = (textElement.childNodes.length * eachLetterDelay) + scopedDuration;
+    const waitTimeUntilLetterStyleFinalization = ((textElement.childNodes.length - 1) * eachLetterDelay) + scopedDuration;
     initializationConfiguration.totalWaitTimeForFinalization = waitTimeUntilLetterStyleFinalization
-    setTimeout(() => {
-        textElement.childNodes.forEach(letter => finalizeEachLetterStyle(letter, initializationConfiguration));
-    }, waitTimeUntilLetterStyleFinalization);
 }
 
 export const write = (text, initializationConfiguration, writingConfiguration = defaultWritingConfiguration) => {
@@ -112,7 +109,7 @@ export const write = (text, initializationConfiguration, writingConfiguration = 
     const { textElementAttributes, letterConfiguration } = validateAndReturnConfiguration(writingConfiguration);
     const textElement = createTextElement(textElementAttributes);
     writeLetters(textElement, text, letterConfiguration, initializationConfiguration);
-    // finalizeLetters(textElement, letterConfiguration, initializationConfiguration);
+    setTotalWaitTimeForFinalization(textElement, letterConfiguration, initializationConfiguration);
 
     svg.appendChild(textElement);
     return textElement.id;
@@ -142,7 +139,6 @@ const eraseLetters = (letters, eraseConfiguration, initializationConfiguration) 
     } = eraseConfiguration;
 
     Array.from(letters).forEach((letter, index) => {
-        console.log(letter.style.animation);
         letter.style.animation = `
         erase-stroke-dashoffset ${eraseStrokeDashoffsetDuration}ms cubic-bezier(0.215, 0.610, 0.355, 1) forwards,
         erase-stroke ${eraseStrokeDuration}ms cubic-bezier(0.215, 0.610, 0.355, 1) forwards,

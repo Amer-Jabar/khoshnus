@@ -43,49 +43,6 @@ export const FONT_MATRIX = {
     },
 }
 
-// XXX: Maybe remove this as well.
-const createLetterStyle = (initializationConfiguration) => {
-    const {
-        font,
-        fontSize,
-        startStrokeDashoffset,
-        startStrokeWidth,
-        startFill,
-        startStroke,
-        strokeDashoffsetDuration,
-        strokeDuration,
-        fillDuration
-    } = initializationConfiguration;
-    return `#${KHOSHNUS_SVG_ID} text tspan {
-        stroke-dasharray: ${startStrokeDashoffset || FONT_MATRIX[font].startStrokeDashoffset};
-        stroke-dashoffset: ${startStrokeDashoffset || FONT_MATRIX[font].startStrokeDashoffset};
-        animation:
-            draw-stroke-dashoffset ${strokeDashoffsetDuration}ms cubic-bezier(0.215, 0.610, 0.355, 1) forwards,
-            draw-stroke ${strokeDuration}ms cubic-bezier(0.215, 0.610, 0.355, 1) forwards,
-            draw-fill ${fillDuration}ms cubic-bezier(0.5, 0.135, 0.15, 0.56) forwards;
-        stroke: ${startStroke};
-        stroke-width: ${startStrokeWidth};
-        fill: ${startFill};
-        font-size: ${fontSize};
-        font-family: ${font};
-    }`
-}
-
-// XXX: Maybe remove this.
-const initializeLetterStyle = (initializationConfiguration) => {
-    if (!FONT_MATRIX[initializationConfiguration.font]) throw new Error("Font is not supported.")
-    // const letterStyle = createLetterStyle(initializationConfiguration)
-
-    let style = document.querySelector("style");
-    if (!style) {
-        style = document.createElement("style");
-        style.innerHTML = letterStyle;
-    } else {
-        style.innerHTML = (style.innerHTML || "").concat(letterStyle);
-    }
-    document.getElementsByTagName('head')[0].appendChild(style);
-}
-
 const initializeDrawKeyframesCss = ({ endStrokeDashoffset, endStrokeWidth, endFill, endStroke }) => `
 @keyframes draw-stroke-dashoffset {
     to {
@@ -119,12 +76,17 @@ const initializeEraseKeyframesCss = ({ startStrokeDashoffset, startStrokeWidth, 
 }
 
 @keyframes erase-stroke {
-    from {
+    0% {
+        stroke-width: ${startStrokeWidth};
+        stroke: ${endStroke};
+    }
+
+    75% {
         stroke-width: ${endStrokeWidth};
         stroke: ${startStroke};
     }
 
-    to {
+    100% {
         stroke-width: ${startStrokeWidth};
         stroke: ${endStroke};
     }
@@ -171,7 +133,6 @@ export const defaultInitializationConfiguration = {
 export const initialize = (initializationConfiguration = defaultInitializationConfiguration) => {
     checkConfigurationValidity(() => typeof initializationConfiguration === "object", initializationConfiguration);
     const fullInitializationConfiguration = initializationConfiguration ? { ...defaultInitializationConfiguration, ...initializationConfiguration } : defaultInitializationConfiguration;
-    // initializeLetterStyle(fullInitializationConfiguration);
     initializeKeyframes(fullInitializationConfiguration);
     return fullInitializationConfiguration;
 }
