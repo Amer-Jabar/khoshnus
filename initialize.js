@@ -43,6 +43,7 @@ export const FONT_MATRIX = {
     },
 }
 
+// XXX: Maybe remove this as well.
 const createLetterStyle = (initializationConfiguration) => {
     const {
         font,
@@ -62,7 +63,6 @@ const createLetterStyle = (initializationConfiguration) => {
             draw-stroke-dashoffset ${strokeDashoffsetDuration}ms cubic-bezier(0.215, 0.610, 0.355, 1) forwards,
             draw-stroke ${strokeDuration}ms cubic-bezier(0.215, 0.610, 0.355, 1) forwards,
             draw-fill ${fillDuration}ms cubic-bezier(0.5, 0.135, 0.15, 0.56) forwards;
-        animation-direction: normal;
         stroke: ${startStroke};
         stroke-width: ${startStrokeWidth};
         fill: ${startFill};
@@ -71,9 +71,10 @@ const createLetterStyle = (initializationConfiguration) => {
     }`
 }
 
+// XXX: Maybe remove this.
 const initializeLetterStyle = (initializationConfiguration) => {
     if (!FONT_MATRIX[initializationConfiguration.font]) throw new Error("Font is not supported.")
-    const letterStyle = createLetterStyle(initializationConfiguration)
+    // const letterStyle = createLetterStyle(initializationConfiguration)
 
     let style = document.querySelector("style");
     if (!style) {
@@ -119,13 +120,13 @@ const initializeEraseKeyframesCss = ({ startStrokeDashoffset, startStrokeWidth, 
 
 @keyframes erase-stroke {
     from {
-        stroke-width: ${startStrokeWidth};
-        stroke: ${endStroke};
+        stroke-width: ${endStrokeWidth};
+        stroke: ${startStroke};
     }
 
     to {
         stroke-width: ${startStrokeWidth};
-        stroke: ${startStroke};
+        stroke: ${endStroke};
     }
 }
 
@@ -170,7 +171,7 @@ export const defaultInitializationConfiguration = {
 export const initialize = (initializationConfiguration = defaultInitializationConfiguration) => {
     checkConfigurationValidity(() => typeof initializationConfiguration === "object", initializationConfiguration);
     const fullInitializationConfiguration = initializationConfiguration ? { ...defaultInitializationConfiguration, ...initializationConfiguration } : defaultInitializationConfiguration;
-    initializeLetterStyle(fullInitializationConfiguration);
+    // initializeLetterStyle(fullInitializationConfiguration);
     initializeKeyframes(fullInitializationConfiguration);
     return fullInitializationConfiguration;
 }
