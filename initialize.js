@@ -43,51 +43,115 @@ export const FONT_MATRIX = {
     },
 }
 
-const initializeDrawKeyframesCss = ({ endStrokeDashoffset, endStrokeWidth, endFill, endStroke }) => `
+const initializeDrawKeyframesCss = ({
+    start: {
+        startStrokeDashoffset,
+        startStrokeWidth,
+        startStroke,
+        startFill
+    }, end: {
+        endStrokeDashoffset,
+        endStrokeWidth,
+        endStroke,
+        endFill
+    }
+}) => `
 @keyframes draw-stroke-dashoffset {
+    from {
+        stroke-dasharray: ${startStrokeDashoffset};
+        stroke-dashoffset: ${startStrokeDashoffset};
+    }
+
     to {
+        stroke-dasharray: ${startStrokeDashoffset};
         stroke-dashoffset: ${endStrokeDashoffset};
     }
 }
 
-@keyframes draw-stroke {
+@keyframes draw-stroke-width {
+    from {
+        stroke-width: ${startStrokeWidth};
+    }
+
     to {
         stroke-width: ${endStrokeWidth};
+    }
+}
+
+@keyframes draw-stroke {
+    from {
+        stroke: ${startStroke};
+    }
+
+    to {
         stroke: ${endStroke};
     }
 }
 
 @keyframes draw-fill {
+    from {
+        fill: ${startFill};
+    }
+
     to {
         fill: ${endFill};
     }
 }
 `
 
-const initializeEraseKeyframesCss = ({ startStrokeDashoffset, startStrokeWidth, startStroke, startFill, endStrokeDashoffset, endStrokeWidth, endStroke, endFill }) => `
+const initializeEraseKeyframesCss = ({
+    start: {
+        startStrokeDashoffset,
+        startStrokeWidth,
+        startStroke,
+        startFill
+    }, end: {
+        endStrokeDashoffset,
+        endStrokeWidth,
+        endStroke,
+        endFill
+    }
+}) => `
 @keyframes erase-stroke-dashoffset {
     from {
+        stroke-dasharray: ${startStrokeDashoffset};
         stroke-dashoffset: ${endStrokeDashoffset};
     }
 
     to {
+        stroke-dasharray: ${startStrokeDashoffset};
         stroke-dashoffset: ${startStrokeDashoffset};
+    }
+}
+
+@keyframes erase-stroke-width {
+    0% {
+        stroke-width: ${startStrokeWidth};
+    }
+
+    25% {
+        stroke-width: ${endStrokeWidth};
+    }
+
+    67.5% {
+        stroke-width: ${endStrokeWidth};
+    }
+
+    100% {
+        stroke-width: ${startStrokeWidth};
     }
 }
 
 @keyframes erase-stroke {
     0% {
-        stroke-width: ${startStrokeWidth};
         stroke: ${endStroke};
     }
 
-    75% {
-        stroke-width: ${endStrokeWidth};
+    80% {
         stroke: ${startStroke};
     }
 
     100% {
-        stroke-width: ${startStrokeWidth};
         stroke: ${endStroke};
     }
 }
@@ -97,7 +161,7 @@ const initializeEraseKeyframesCss = ({ startStrokeDashoffset, startStrokeWidth, 
         fill: ${endFill};
     }
 
-    to {
+    50% {
         fill: ${startFill};
     }
 }
@@ -105,29 +169,31 @@ const initializeEraseKeyframesCss = ({ startStrokeDashoffset, startStrokeWidth, 
 
 const initializeKeyframes = (initializationConfiguration) => {
     const style = document.querySelector("style");
-    style.innerHTML = style.innerHTML.concat(initializeDrawKeyframesCss(initializationConfiguration));
-    style.innerHTML = style.innerHTML.concat(initializeEraseKeyframesCss(initializationConfiguration));
+    style.innerHTML = style.innerHTML.concat(initializeDrawKeyframesCss({ start: initializationConfiguration.start, end: initializationConfiguration.end }));
+    style.innerHTML = style.innerHTML.concat(initializeEraseKeyframesCss({ start: initializationConfiguration.start, end: initializationConfiguration.end }));
 }
 
-/**
- * baseAnimationDuration - the duration of strokes animation. This controls how fast does it take for the edges to animate.
- * textFillExtraAnimationDuration - the duration of the text fillings animation. It is advised to have this equal to or more than baseAnimationDuration.
- */
 export const defaultInitializationConfiguration = {
     font: FONT_MATRIX["Pinyon Script"].name,
     fontSize: "16px",
-    startStrokeDashoffset: FONT_MATRIX["Pinyon Script"].strokeDashoffset,
-    startStrokeWidth: 0.001,
-    startFill: "transparent",
-    endFill: "black",
-    startStroke: "black",
-    endStrokeDashoffset: 0,
-    endStrokeWidth: 0.3,
-    endStroke: "transparent",
-    strokeDashoffsetDuration: 2500,
-    strokeDuration: 2500,
-    fillDuration: 3000,
-    totalWaitTimeForFinalization: -1
+    start: {
+        startStrokeDashoffset: FONT_MATRIX["Pinyon Script"].strokeDashoffset,
+        startStroke: "black",
+        startStrokeWidth: 0.001,
+        startFill: "transparent",
+    },
+    end: {
+        endStrokeDashoffset: 0,
+        endStroke: "transparent",
+        endStrokeWidth: 0.3,
+        endFill: "black",
+    },
+    durations: {
+        strokeDashoffsetDuration: 3500,
+        strokeWidthDuration: 2500,
+        strokeDuration: 2500,
+        fillDuration: 4000,
+    },
 }
 
 export const initialize = (initializationConfiguration = defaultInitializationConfiguration) => {

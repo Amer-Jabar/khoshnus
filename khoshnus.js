@@ -1,5 +1,5 @@
 import { initialize } from "./initialize.js"
-import { write, erase } from "./operations.js"
+import { write, erase } from "./operations/operations.js"
 
 export class Manuscript {
     setup(initializationConfiguration) {
