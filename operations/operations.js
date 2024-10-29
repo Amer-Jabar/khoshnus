@@ -113,6 +113,7 @@ const defaultEraseConfiguration = {
     delayEraseStrokeWidth: 0,
     delayEraseStroke: 0,
     delayEraseFill: 0,
+    delayOperation: 0
 }
 
 const eraseLetters = (letters, eraseConfiguration, initializationConfiguration) => {
@@ -129,7 +130,7 @@ const eraseLetters = (letters, eraseConfiguration, initializationConfiguration) 
         delayEraseFill,
     } = eraseConfiguration;
 
-    Array.from(letters).forEach((letter, index) => {
+    Array.from(letters).forEach(letter => {
         letter.style.animation = `
         erase-stroke-dashoffset ${eraseStrokeDashoffsetDuration}ms cubic-bezier(0.215, 0.610, 0.355, 1) forwards,
         erase-stroke-width ${eraseStrokeWidthDuration}ms cubic-bezier(0.215, 0.610, 0.355, 1) forwards,
@@ -137,10 +138,10 @@ const eraseLetters = (letters, eraseConfiguration, initializationConfiguration) 
         erase-fill ${eraseFillDuration}ms cubic-bezier(0.5, 0.135, 0.15, 0.56) forwards
         `;
         letter.style.animationDelay = `
-        ${index * delayEraseStrokeDashoffset}ms,
-        ${index * delayEraseStrokeWidth}.ms,
-        ${index * delayEraseStroke}ms,
-        ${index * delayEraseFill}ms
+        ${delayEraseStrokeDashoffset}ms,
+        ${delayEraseStrokeWidth}ms,
+        ${delayEraseStroke}ms,
+        ${delayEraseFill}ms
         `;
     });
 }
