@@ -179,7 +179,7 @@ export const defaultInitializationConfiguration = {
     start: {
         startStrokeDashoffset: FONT_MATRIX["Pinyon Script"].strokeDashoffset,
         startStroke: "black",
-        startStrokeWidth: 0.001,
+        startStrokeWidth: 0.0000000001,
         startFill: "transparent",
     },
     end: {

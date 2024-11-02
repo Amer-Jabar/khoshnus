@@ -1,4 +1,4 @@
-import { checkConfigurationValidity, FONT_MATRIX, KHOSHNUS_SVG_ID } from "../initialize";
+import { checkConfigurationValidity, KHOSHNUS_SVG_ID } from "../initialize";
 
 export const checkDeclaration = () => {
     const svg = document.getElementById(KHOSHNUS_SVG_ID);
@@ -9,13 +9,14 @@ export const checkDeclaration = () => {
 
 const defaultTextElementAttributes = { x: "50%", y: "50%", textAnchor: "middle", dominantBaseline: "middle", fontSize: "12px" }
 
-const defaultLetterConfiguration = {
-    eachLetterDelay: 250
+const defaultWriteConfiguration = {
+    eachLetterDelay: 250,
+    delayOperation: 0
 }
 
 export const defaultWritingConfiguration = {
     textElementAttributes: defaultTextElementAttributes,
-    letterConfiguration: defaultLetterConfiguration,
+    letterConfiguration: defaultWriteConfiguration,
 }
 
 const validateAndReturnConfiguration = (writingConfiguration) => {
@@ -25,13 +26,12 @@ const validateAndReturnConfiguration = (writingConfiguration) => {
     }, writingConfiguration);
     return {
         textElementAttributes: { ...defaultTextElementAttributes, ...writingConfiguration.textElementAttributes },
-        letterConfiguration: { ...defaultLetterConfiguration, ...writingConfiguration.letterConfiguration }
+        letterConfiguration: { ...defaultWriteConfiguration, ...writingConfiguration.letterConfiguration }
     };
 }
 
-const createTextElement = (textElementAttributes) => {
+const createTextElement = (textId, textElementAttributes) => {
     const textElement = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    const textId = crypto.randomUUID()
     textElement.id = textId;
     textElement.setAttribute("x", textElementAttributes.x);
     textElement.setAttribute("y", textElementAttributes.y);
@@ -87,18 +87,46 @@ const writeLetters = (textElement, letters, letterConfiguration, initializationC
 }
 
 const setTotalWaitTimeForFinalization = (textElement, letterConfiguration, initializationConfiguration) => {
-    const { durations: { strokeDashoffsetDuration, fillDuration } } = initializationConfiguration;
-    const largestDuration = Math.max(strokeDashoffsetDuration, fillDuration)
-    const waitTimeUntilLetterStyleFinalization = (textElement.childNodes.length - 1) + largestDuration;
+    const { durations: {
+        strokeDashoffsetDuration,
+        strokeWidthDuration,
+        strokeDuration,
+        fillDuration,
+    } } = initializationConfiguration;
+    const largestDuration = Math.max(
+        strokeDashoffsetDuration,
+        strokeWidthDuration,
+        strokeDuration,
+        fillDuration,
+    )
+    const smallestDuration = Math.min(
+        strokeDashoffsetDuration,
+        strokeWidthDuration,
+        strokeDuration,
+        fillDuration,
+    )
+    const usedDuration = (largestDuration / smallestDuration) < 1.25 ? largestDuration : smallestDuration
+    const textSize = textElement.childNodes.length - 1;
+    const lettersDelay = textSize * letterConfiguration.eachLetterDelay
+    const waitTimeUntilLetterStyleFinalization = usedDuration + lettersDelay;
     initializationConfiguration.totalWaitTimeForFinalization = waitTimeUntilLetterStyleFinalization
 }
 
 export const write = (text, initializationConfiguration, writingConfiguration = defaultWritingConfiguration) => {
     checkDeclaration();
-    const svg = document.getElementById(KHOSHNUS_SVG_ID);
+    const { textElementAttributes, letterConfiguration } = validateAndReturnConfiguration(writingConfiguration)
+    const svg = document.getElementById(KHOSHNUS_SVG_ID)
+    const textId = crypto.randomUUID()
+    if (letterConfiguration.delayOperation) {
+        setTimeout(() => doWrite(svg, text, textId, textElementAttributes, letterConfiguration, initializationConfiguration), letterConfiguration.delayOperation)
+    } else {
+        return doWrite(svg, text, textId, textElementAttributes, letterConfiguration, initializationConfiguration)
+    }
+    return textId
+}
 
-    const { textElementAttributes, letterConfiguration } = validateAndReturnConfiguration(writingConfiguration);
-    const textElement = createTextElement(textElementAttributes);
+const doWrite = (svg, text, textId, textElementAttributes, letterConfiguration, initializationConfiguration) => {
+    const textElement = createTextElement(textId, textElementAttributes);
     writeLetters(textElement, text, letterConfiguration, initializationConfiguration);
     setTotalWaitTimeForFinalization(textElement, letterConfiguration, initializationConfiguration);
 
@@ -129,7 +157,6 @@ const eraseLetters = (letters, eraseConfiguration, initializationConfiguration) 
         delayEraseStroke,
         delayEraseFill,
     } = eraseConfiguration;
-
     Array.from(letters).forEach(letter => {
         letter.style.animation = `
         erase-stroke-dashoffset ${eraseStrokeDashoffsetDuration}ms cubic-bezier(0.215, 0.610, 0.355, 1) forwards,
