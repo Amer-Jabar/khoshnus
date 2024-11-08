@@ -209,7 +209,7 @@ manuscript.erase(textId5, { delayOperation: 20000 });
 
 It generates the following piece of art:
 
-<video src="https://i.imgur.com/y2BW74K.mp4" controls></video>
+https://i.imgur.com/y2BW74K.mp4
 
 ### 🖼️ Font Options
 
