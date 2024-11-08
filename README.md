@@ -23,7 +23,6 @@ Khoshnus lets you:
 
 ## 🚀 Quick Start
 
-
 ### 📦 Installation
 
 To get started with Khoshnus, add the npm package to your project by running either of the following commands:
@@ -43,11 +42,13 @@ import 'khoshnus/style.css'
 
 const App = () => {
     useEffect(() => {
-        initialize({
-            font: FONT_MATRIX['Pinyon Script'].name,
-            fontSize: "8px",
+        const manuscript = new Manuscript();
+        manuscript.setup({
+            font: FONT_MATRIX["Pinyon Script"].name,
+            fontSize: "10px",
         });
-        write("Hello Universe, My Name Is Optimus Prime!");
+        const textId = manuscript.write("Hello Universe, My Name Is Optimus Prime!")
+        manuscript.erase(textId, { delayOperation: 15000 })
     }, []);
 
     return (
@@ -85,13 +86,17 @@ import "khoshnus/style.css";
 Then start using the library:
 
 ```javascript
-// Initialize the global configuration.
-initialize({
-    font: FONT_MATRIX["Parisienne"].name, // Any of the supported fonts.
-    fontSize: "10px", // Any font size suitable for your SVG element bounds.
+// Create the Manuscript instance and setup global configuration.
+const manuscript = new Manuscript();
+manuscript.setup({
+    font: FONT_MATRIX["Pinyon Script"].name,
+    fontSize: "10px",
 });
 // Write the letters into the SVG element.
-write("Hello Universe, My Name Is Optimus Prime!");
+const textId = manuscript.write("Hello Universe, My Name Is Optimus Prime!")
+
+// Erase the text after the desired waiting period - optional, you can leave it forever ;)
+manuscript.erase(textId, { delayOperation: 15000 })
 ```
 
 ### 3. Customize Your Animation
@@ -103,27 +108,36 @@ Here’s a glimpse of how you can tweak it:
 initialize({
     font: FONT_MATRIX["Pinyon Script"].name, // Only fonts from FONT_MATRIX are available.
     fontSize: "16px",
-    startStrokeDashoffset: FONT_MATRIX["Pinyon Script"].strokeDashoffset, // Or any strokeDashoffset you want the letters to start with.
-    startStrokeWidth: 0.001,
-    startFill: "transparent",
-    endFill: "black",
-    startStroke: "black",
-    endStrokeDashoffset: 0,
-    endStrokeWidth: 0.3,
-    endStroke: "transparent",
-    baseAnimationDelay: 2.5,
-    textFillExtraAnimationDelay: 3,
+    start: {
+        startStrokeDashoffset: FONT_MATRIX["Pinyon Script"].strokeDashoffset,
+        startStroke: "black",
+        startStrokeWidth: 0.0000000001,
+        startFill: "transparent",
+    },
+    end: {
+        endStrokeDashoffset: 0,
+        endStroke: "transparent",
+        endStrokeWidth: 0.3,
+        endFill: "black",
+    },
+    durations: {
+        strokeDashoffsetDuration: 3500,
+        strokeWidthDuration: 2500,
+        strokeDuration: 2500,
+        fillDuration: 4000,
+    },
 });
 ```
 
-### ✍️ Make Every Letter Special
+### ✍️ Positioning & Delays
 
-The magic of Khoshnus lies in its ability to animate text letter-by-letter. Here’s an example:
+The magic of Khoshnus lies in its ability to provide positioning and delay control. Here’s an example:
 
 ```javascript
 write("Your Text Here", {
-    letterConfiguration: {
-        delay: 0.25, // Delays each letter's animation
+    writeConfiguration: {
+        eachLetterDelay: 250, // Delay of each letter after the previous one.
+        delayOperation: 0 // Delay of the write operation - useful when you want wait time between written snippets.
     },
     textConfiguration: {
         x: "50%", // X position of the text.
@@ -134,6 +148,68 @@ write("Your Text Here", {
     }
 });
 ```
+
+## 💡 Advanced Example
+
+Check out the following snippet:
+```javascript
+const manuscript = new Manuscript();
+manuscript.setup({
+    font: FONT_MATRIX["Pinyon Script"].name,
+    fontSize: "10px",
+});
+const textId0 = manuscript.write("Do not lament my absence,", {
+    textElementAttributes: { y: "10%", },
+    writeConfiguration: { eachLetterDelay: 100 }
+})
+const textId1 = manuscript.write("for in my spark,", {
+    textElementAttributes: { y: "25%" },
+    writeConfiguration: {
+        delayOperation: 3000,
+        eachLetterDelay: 100
+    }
+})
+const textId2 = manuscript.write("I know that this is not the end,", {
+    textElementAttributes: { y: "37.5%" },
+    writeConfiguration: {
+        delayOperation: 5500,
+        eachLetterDelay: 100,
+    }
+})
+const textId3 = manuscript.write("but merely,", {
+    textElementAttributes: { y: "55%" },
+    writeConfiguration: {
+        delayOperation: 9500,
+        eachLetterDelay: 100,
+    }
+})
+const textId4 = manuscript.write("a new beginning.", {
+    textElementAttributes: { y: "67.5%", },
+    writeConfiguration: {
+        delayOperation: 11500,
+        eachLetterDelay: 100,
+    }
+})
+const textId5 = manuscript.write("- Optimus Prime", {
+    textElementAttributes: {
+        x: "80%",
+        y: "90%",
+    }, writeConfiguration: {
+        delayOperation: 14000,
+        eachLetterDelay: 100,
+    }
+})
+manuscript.erase(textId0, { delayOperation: 20000 });
+manuscript.erase(textId1, { delayOperation: 20000 });
+manuscript.erase(textId2, { delayOperation: 20000 });
+manuscript.erase(textId3, { delayOperation: 20000 });
+manuscript.erase(textId4, { delayOperation: 20000 });
+manuscript.erase(textId5, { delayOperation: 20000 });
+```
+
+It generates the following piece of art:
+
+<video src="https://i.imgur.com/y2BW74K.mp4" controls></video>
 
 ### 🖼️ Font Options
 
