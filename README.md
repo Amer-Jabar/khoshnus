@@ -209,7 +209,7 @@ manuscript.erase(textId5, { delayOperation: 20000 });
 
 It generates the following piece of art:
 
-https://i.imgur.com/y2BW74K.mp4
+https://github.com/user-attachments/assets/ac1641df-facf-40db-91ea-e7565340cba7
 
 ### 🖼️ Font Options
 
