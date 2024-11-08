@@ -16,17 +16,17 @@ const defaultWriteConfiguration = {
 
 export const defaultWritingConfiguration = {
     textElementAttributes: defaultTextElementAttributes,
-    letterConfiguration: defaultWriteConfiguration,
+    writeConfiguration: defaultWriteConfiguration,
 }
 
 const validateAndReturnConfiguration = (writingConfiguration) => {
     checkConfigurationValidity(() => {
-        const { textElementAttributes, letterConfiguration } = writingConfiguration;
-        return [textElementAttributes, letterConfiguration].filter(configuration => configuration).every(config => typeof config === "object")
+        const { textElementAttributes, writeConfiguration } = writingConfiguration;
+        return [textElementAttributes, writeConfiguration].filter(configuration => configuration).every(config => typeof config === "object")
     }, writingConfiguration);
     return {
         textElementAttributes: { ...defaultTextElementAttributes, ...writingConfiguration.textElementAttributes },
-        letterConfiguration: { ...defaultWriteConfiguration, ...writingConfiguration.letterConfiguration }
+        writeConfiguration: { ...defaultWriteConfiguration, ...writingConfiguration.writeConfiguration }
     };
 }
 
@@ -76,17 +76,17 @@ const setLetterStyle = (letter, initializationConfiguration) => {
     `;
 }
 
-const writeLetters = (textElement, letters, letterConfiguration, initializationConfiguration) => {
+const writeLetters = (textElement, letters, writeConfiguration, initializationConfiguration) => {
     [...letters].forEach((letterToWrite, index) => {
         const letterElement = document.createElementNS("http://www.w3.org/2000/svg", "tspan")
         letterElement.textContent = letterToWrite;
         setLetterStyle(letterElement, initializationConfiguration);
-        letterElement.style.animationDelay = `${(index + 1) * letterConfiguration.eachLetterDelay}ms`;
+        letterElement.style.animationDelay = `${(index + 1) * writeConfiguration.eachLetterDelay}ms`;
         textElement.appendChild(letterElement);
     });
 }
 
-const setTotalWaitTimeForFinalization = (textElement, letterConfiguration, initializationConfiguration) => {
+const setTotalWaitTimeForFinalization = (textElement, writeConfiguration, initializationConfiguration) => {
     const { durations: {
         strokeDashoffsetDuration,
         strokeWidthDuration,
@@ -107,28 +107,28 @@ const setTotalWaitTimeForFinalization = (textElement, letterConfiguration, initi
     )
     const usedDuration = (largestDuration / smallestDuration) < 1.25 ? largestDuration : smallestDuration
     const textSize = textElement.childNodes.length - 1;
-    const lettersDelay = textSize * letterConfiguration.eachLetterDelay
+    const lettersDelay = textSize * writeConfiguration.eachLetterDelay
     const waitTimeUntilLetterStyleFinalization = usedDuration + lettersDelay;
     initializationConfiguration.totalWaitTimeForFinalization = waitTimeUntilLetterStyleFinalization
 }
 
 export const write = (text, initializationConfiguration, writingConfiguration = defaultWritingConfiguration) => {
     checkDeclaration();
-    const { textElementAttributes, letterConfiguration } = validateAndReturnConfiguration(writingConfiguration)
+    const { textElementAttributes, writeConfiguration } = validateAndReturnConfiguration(writingConfiguration)
     const svg = document.getElementById(KHOSHNUS_SVG_ID)
     const textId = crypto.randomUUID()
-    if (letterConfiguration.delayOperation) {
-        setTimeout(() => doWrite(svg, text, textId, textElementAttributes, letterConfiguration, initializationConfiguration), letterConfiguration.delayOperation)
+    if (writeConfiguration.delayOperation) {
+        setTimeout(() => doWrite(svg, text, textId, textElementAttributes, writeConfiguration, initializationConfiguration), writeConfiguration.delayOperation)
     } else {
-        return doWrite(svg, text, textId, textElementAttributes, letterConfiguration, initializationConfiguration)
+        return doWrite(svg, text, textId, textElementAttributes, writeConfiguration, initializationConfiguration)
     }
     return textId
 }
 
-const doWrite = (svg, text, textId, textElementAttributes, letterConfiguration, initializationConfiguration) => {
+const doWrite = (svg, text, textId, textElementAttributes, writeConfiguration, initializationConfiguration) => {
     const textElement = createTextElement(textId, textElementAttributes);
-    writeLetters(textElement, text, letterConfiguration, initializationConfiguration);
-    setTotalWaitTimeForFinalization(textElement, letterConfiguration, initializationConfiguration);
+    writeLetters(textElement, text, writeConfiguration, initializationConfiguration);
+    setTotalWaitTimeForFinalization(textElement, writeConfiguration, initializationConfiguration);
 
     svg.appendChild(textElement);
     return textElement.id;

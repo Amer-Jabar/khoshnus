@@ -1,7 +1,7 @@
 export const KHOSHNUS_SVG_ID = "khoshnus";
-export const INCORRECT_CONFIGURATION_PROVIDED_ERROR_MESSAGE = "Provided configuration must be of type object!"
-export const checkConfigurationValidity = (predicate, configuration) => {
-    if (!predicate(configuration)) throw new Error(INCORRECT_CONFIGURATION_PROVIDED_ERROR_MESSAGE);
+export const INCORRECT_CONFIGURATION_PROVIDED_ERROR_MESSAGE = "Provided configuration must be valid!"
+export const checkConfigurationValidity = (predicate, configuration, errorMessage) => {
+    if (!predicate(configuration)) throw new Error(errorMessage || INCORRECT_CONFIGURATION_PROVIDED_ERROR_MESSAGE);
 }
 
 export const FONT_MATRIX = {
@@ -196,9 +196,39 @@ export const defaultInitializationConfiguration = {
     },
 }
 
+const isFontConfigurationValid = (initializationConfiguration) => {
+    return initializationConfiguration.font
+        && initializationConfiguration.fontSize
+}
+
 export const initialize = (initializationConfiguration = defaultInitializationConfiguration) => {
-    checkConfigurationValidity(() => typeof initializationConfiguration === "object", initializationConfiguration);
-    const fullInitializationConfiguration = initializationConfiguration ? { ...defaultInitializationConfiguration, ...initializationConfiguration } : defaultInitializationConfiguration;
+    checkConfigurationValidity(
+        () => typeof initializationConfiguration === "object",
+        initializationConfiguration,
+        "Provided configuration must be of type object!"
+    );
+    checkConfigurationValidity(
+        () => isFontConfigurationValid(initializationConfiguration),
+        initializationConfiguration,
+        "Provided configuration have must valid font properties!"
+    );
+    const fullInitializationConfiguration = initializationConfiguration ? {
+        ...defaultInitializationConfiguration,
+        font: initializationConfiguration.font,
+        fontSize: initializationConfiguration.fontSize,
+        start: {
+            ...defaultInitializationConfiguration.start,
+            ...initializationConfiguration.start,
+        },
+        end: {
+            ...defaultInitializationConfiguration.end,
+            ...initializationConfiguration.end,
+        },
+        durations: {
+            ...defaultInitializationConfiguration.durations,
+            ...initializationConfiguration.durations,
+        },
+    } : defaultInitializationConfiguration;
     initializeKeyframes(fullInitializationConfiguration);
     return fullInitializationConfiguration;
 }
