@@ -44,6 +44,7 @@ export const FONT_MATRIX = {
 }
 
 const initializeDrawKeyframesCss = ({
+    svgId,
     start: {
         startStrokeDashoffset,
         startStrokeWidth,
@@ -56,7 +57,7 @@ const initializeDrawKeyframesCss = ({
         endFill
     }
 }) => `
-@keyframes draw-stroke-dashoffset {
+@keyframes draw-stroke-dashoffset-${svgId} {
     from {
         stroke-dasharray: ${startStrokeDashoffset};
         stroke-dashoffset: ${startStrokeDashoffset};
@@ -68,7 +69,7 @@ const initializeDrawKeyframesCss = ({
     }
 }
 
-@keyframes draw-stroke-width {
+@keyframes draw-stroke-width-${svgId} {
     from {
         stroke-width: ${startStrokeWidth};
     }
@@ -78,7 +79,7 @@ const initializeDrawKeyframesCss = ({
     }
 }
 
-@keyframes draw-stroke {
+@keyframes draw-stroke-${svgId} {
     from {
         stroke: ${startStroke};
     }
@@ -88,7 +89,7 @@ const initializeDrawKeyframesCss = ({
     }
 }
 
-@keyframes draw-fill {
+@keyframes draw-fill-${svgId} {
     from {
         fill: ${startFill};
     }
@@ -100,6 +101,7 @@ const initializeDrawKeyframesCss = ({
 `
 
 const initializeEraseKeyframesCss = ({
+    svgId,
     start: {
         startStrokeDashoffset,
         startStrokeWidth,
@@ -112,7 +114,7 @@ const initializeEraseKeyframesCss = ({
         endFill
     }
 }) => `
-@keyframes erase-stroke-dashoffset {
+@keyframes erase-stroke-dashoffset-${svgId} {
     from {
         stroke-dasharray: ${startStrokeDashoffset};
         stroke-dashoffset: ${endStrokeDashoffset};
@@ -124,7 +126,7 @@ const initializeEraseKeyframesCss = ({
     }
 }
 
-@keyframes erase-stroke-width {
+@keyframes erase-stroke-width-${svgId} {
     0% {
         stroke-width: ${startStrokeWidth};
     }
@@ -142,7 +144,7 @@ const initializeEraseKeyframesCss = ({
     }
 }
 
-@keyframes erase-stroke {
+@keyframes erase-stroke-${svgId} {
     0% {
         stroke: ${endStroke};
     }
@@ -156,7 +158,7 @@ const initializeEraseKeyframesCss = ({
     }
 }
 
-@keyframes erase-fill {
+@keyframes erase-fill-${svgId} {
     from {
         fill: ${endFill};
     }
@@ -169,11 +171,12 @@ const initializeEraseKeyframesCss = ({
 
 const initializeKeyframes = (initializationConfiguration) => {
     const style = document.querySelector("style");
-    style.innerHTML = style.innerHTML.concat(initializeDrawKeyframesCss({ start: initializationConfiguration.start, end: initializationConfiguration.end }));
-    style.innerHTML = style.innerHTML.concat(initializeEraseKeyframesCss({ start: initializationConfiguration.start, end: initializationConfiguration.end }));
+    style.innerHTML = style.innerHTML.concat(initializeDrawKeyframesCss({ svgId: initializationConfiguration.svgId, start: initializationConfiguration.start, end: initializationConfiguration.end }));
+    style.innerHTML = style.innerHTML.concat(initializeEraseKeyframesCss({ svgId: initializationConfiguration.svgId, start: initializationConfiguration.start, end: initializationConfiguration.end }));
 }
 
 export const defaultInitializationConfiguration = {
+    svgId: KHOSHNUS_SVG_ID,
     font: FONT_MATRIX["Pinyon Script"].name,
     fontSize: "16px",
     start: {

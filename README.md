@@ -211,6 +211,47 @@ It generates the following piece of art:
 
 https://github.com/user-attachments/assets/ac1641df-facf-40db-91ea-e7565340cba7
 
+## Multiple SVGs
+
+It is possible to define multiple SVGs in your component/view as long as they have different ids and you define which Manuscript object references which SVG element. The following React.js snippet shows two SVG elements being referenced, each by its corresponding Manuscript object:
+
+```javascript
+const App = () => {
+  useEffect(() => {
+    const manuscript1 = new Manuscript({
+      svgId: "khoshnus-1",
+      font: FONT_MATRIX["Pinyon Script"].name,
+      fontSize: "10px",
+    });
+    const text1 = manuscript1.write("Do not lament my absence,", {
+      textElementAttributes: {
+        y: "10%",
+      }, writeConfiguration: { eachLetterDelay: 100 }
+    })
+    manuscript1.erase(text1)
+    
+    const manuscript2 = new Manuscript({
+      svgId: "khoshnus-2",
+      font: FONT_MATRIX["Pinyon Script"].name,
+      fontSize: "10px",
+    });
+    const text2 = manuscript2.write("For in my spark,", {
+      textElementAttributes: {
+        y: "10%",
+      }, writeConfiguration: { eachLetterDelay: 100 }
+    })
+    manuscript2.erase(text2)
+  }, []);
+
+  return (
+    <div>
+      <svg id="khoshnus-1" width="100%" height="300" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"></svg>
+      <svg id="khoshnus-2" width="100%" height="300" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+  )
+}
+```
+
 ### 🖼️ Font Options
 
 Here are some of the unique fonts you can play with:

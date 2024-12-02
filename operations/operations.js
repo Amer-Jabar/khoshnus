@@ -1,7 +1,7 @@
 import { checkConfigurationValidity, KHOSHNUS_SVG_ID } from "../initialize";
 
-export const checkDeclaration = () => {
-    const svg = document.getElementById(KHOSHNUS_SVG_ID);
+export const checkDeclaration = (svgId) => {
+    const svg = document.getElementById(svgId) || document.getElementById(KHOSHNUS_SVG_ID)
     if (!svg) throw new Error("Khoshnus SVG not initiated.")
 }
 
@@ -46,6 +46,7 @@ const createTextElement = (textId, textElementAttributes) => {
 
 const setLetterStyle = (letter, initializationConfiguration) => {
     const {
+        svgId,
         font,
         fontSize,
         start: {
@@ -69,10 +70,10 @@ const setLetterStyle = (letter, initializationConfiguration) => {
     letter.style.stroke = startStroke;
     letter.style.fill = startFill;
     letter.style.animation = `
-    draw-stroke-dashoffset ${strokeDashoffsetDuration}ms cubic-bezier(0.215, 0.610, 0.355, 1) forwards,
-    draw-stroke-width ${strokeWidthDuration}ms cubic-bezier(0.215, 0.610, 0.355, 1) forwards,
-    draw-stroke ${strokeDuration}ms cubic-bezier(0.215, 0.610, 0.355, 1) forwards,
-    draw-fill ${fillDuration}ms cubic-bezier(0.5, 0.135, 0.15, 0.56) forwards
+    draw-stroke-dashoffset-${svgId} ${strokeDashoffsetDuration}ms cubic-bezier(0.215, 0.610, 0.355, 1) forwards,
+    draw-stroke-width-${svgId} ${strokeWidthDuration}ms cubic-bezier(0.215, 0.610, 0.355, 1) forwards,
+    draw-stroke-${svgId} ${strokeDuration}ms cubic-bezier(0.215, 0.610, 0.355, 1) forwards,
+    draw-fill-${svgId} ${fillDuration}ms cubic-bezier(0.5, 0.135, 0.15, 0.56) forwards
     `;
 }
 
@@ -112,10 +113,10 @@ const setTotalWaitTimeForFinalization = (textElement, writeConfiguration, initia
     initializationConfiguration.totalWaitTimeForFinalization = waitTimeUntilLetterStyleFinalization
 }
 
-export const write = (text, initializationConfiguration, writingConfiguration = defaultWritingConfiguration) => {
-    checkDeclaration();
+export const write = (svgId, text, initializationConfiguration, writingConfiguration = defaultWritingConfiguration) => {
+    checkDeclaration(svgId);
     const { textElementAttributes, writeConfiguration } = validateAndReturnConfiguration(writingConfiguration)
-    const svg = document.getElementById(KHOSHNUS_SVG_ID)
+    const svg = document.getElementById(svgId) || document.getElementById(KHOSHNUS_SVG_ID)
     const textId = crypto.randomUUID()
     if (writeConfiguration.delayOperation) {
         setTimeout(() => doWrite(svg, text, textId, textElementAttributes, writeConfiguration, initializationConfiguration), writeConfiguration.delayOperation)
@@ -145,6 +146,7 @@ const defaultEraseConfiguration = {
 }
 
 const eraseLetters = (letters, eraseConfiguration, initializationConfiguration) => {
+    const { svgId } = initializationConfiguration
     const {
         strokeDashoffsetDuration: eraseStrokeDashoffsetDuration,
         strokeWidthDuration: eraseStrokeWidthDuration,
@@ -159,10 +161,10 @@ const eraseLetters = (letters, eraseConfiguration, initializationConfiguration) 
     } = eraseConfiguration;
     Array.from(letters).forEach(letter => {
         letter.style.animation = `
-        erase-stroke-dashoffset ${eraseStrokeDashoffsetDuration}ms cubic-bezier(0.215, 0.610, 0.355, 1) forwards,
-        erase-stroke-width ${eraseStrokeWidthDuration}ms cubic-bezier(0.215, 0.610, 0.355, 1) forwards,
-        erase-stroke ${eraseStrokeDuration}ms cubic-bezier(0.215, 0.610, 0.355, 1) forwards,
-        erase-fill ${eraseFillDuration}ms cubic-bezier(0.5, 0.135, 0.15, 0.56) forwards
+        erase-stroke-dashoffset-${svgId} ${eraseStrokeDashoffsetDuration}ms cubic-bezier(0.215, 0.610, 0.355, 1) forwards,
+        erase-stroke-width-${svgId} ${eraseStrokeWidthDuration}ms cubic-bezier(0.215, 0.610, 0.355, 1) forwards,
+        erase-stroke-${svgId} ${eraseStrokeDuration}ms cubic-bezier(0.215, 0.610, 0.355, 1) forwards,
+        erase-fill-${svgId} ${eraseFillDuration}ms cubic-bezier(0.5, 0.135, 0.15, 0.56) forwards
         `;
         letter.style.animationDelay = `
         ${delayEraseStrokeDashoffset}ms,
@@ -173,10 +175,10 @@ const eraseLetters = (letters, eraseConfiguration, initializationConfiguration) 
     });
 }
 
-export const erase = (textId, initializationConfiguration, eraseConfiguration = defaultEraseConfiguration) => {
+export const erase = (svgId, textId, initializationConfiguration, eraseConfiguration = defaultEraseConfiguration) => {
     const delayOperation = eraseConfiguration?.delayOperation || initializationConfiguration.totalWaitTimeForFinalization;
     setTimeout(() => {
-        const svg = document.getElementById(KHOSHNUS_SVG_ID);
+        const svg = document.getElementById(svgId) || document.getElementById(KHOSHNUS_SVG_ID);
         const textElement = svg.getElementById(textId);
         if (!textElement) return;
 

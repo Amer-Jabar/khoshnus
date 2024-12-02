@@ -2,15 +2,16 @@ import { initialize } from "./initialize.js"
 import { write, erase } from "./operations/operations.js"
 
 export class Manuscript {
-    setup(initializationConfiguration) {
+    constructor(initializationConfiguration) {
         this.initializationConfiguration = initialize(initializationConfiguration)
+        this.svgId = initializationConfiguration.svgId
     }
 
     write(text, writingConfiguration) {
-        return write(text, this.initializationConfiguration, writingConfiguration);
+        return write(this.svgId, text, this.initializationConfiguration, writingConfiguration)
     }
 
     erase(textId, eraseConfiguration) {
-        erase(textId, this.initializationConfiguration, eraseConfiguration)
+        erase(this.svgId, textId, this.initializationConfiguration, eraseConfiguration)
     }
 }
